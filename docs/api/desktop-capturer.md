@@ -72,6 +72,50 @@ const constraints = {
 }
 ```
 
+This example shows how to capture a video from a [WebContents](web-contents.md)
+
+```javascript
+// In the renderer process.
+const { desktopCapturer, remote } = require('electron')
+
+desktopCapturer.getWebContentsStream({ webContentsId: getCurrentWebContents().id }).then(async result => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        mandatory: {
+          chromeMediaSource: 'tab',
+          chromeMediaSourceId: result.id
+        }
+      },
+      video: {
+        mandatory: {
+          chromeMediaSource: 'tab',
+          chromeMediaSourceId: result.id,
+          minWidth: 1280,
+          maxWidth: 1280,
+          minHeight: 720,
+          maxHeight: 720
+        }
+      }
+    })
+    handleStream(stream)
+  } catch (e) {
+    handleError(e)
+  }
+})
+
+function handleStream (stream) {
+  const video = document.querySelector('video')
+  video.srcObject = stream
+  video.onloadedmetadata = (e) => video.play()
+}
+
+function handleError (e) {
+  console.log(e)
+}
+```
+
+
 ## Methods
 
 The `desktopCapturer` module has the following methods:
@@ -93,6 +137,13 @@ Returns `Promise<DesktopCapturerSource[]>` - Resolves with an array of [`Desktop
 
 **Note** Capturing the screen contents requires user consent on macOS 10.15 Catalina or higher,
 which can detected by [`systemPreferences.getMediaAccessStatus`].
+
+### `desktopCapturer.getWebContentsStream(options)`
+
+* `options` Object
+  * `webContentsId` number - Id of the WebContents to get stream of
+
+Returns `Promise<WebContentsStreamResult>` - Resolves with a [`WebContentsStreamResult`](structures/web-contents-stream-result.md).
 
 [`navigator.mediaDevices.getUserMedia`]: https://developer.mozilla.org/en/docs/Web/API/MediaDevices/getUserMedia
 [`systemPreferences.getMediaAccessStatus`]: system-preferences.md#systempreferencesgetmediaaccessstatusmediatype-macos
