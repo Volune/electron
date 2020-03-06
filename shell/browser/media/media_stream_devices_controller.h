@@ -27,6 +27,7 @@ class MediaStreamDevicesController {
  private:
   // Handle the request of desktop or tab screen cast.
   void HandleUserMediaRequest();
+  void HandleDisplayMediaRequest();
 
   // The original request for access to devices.
   const content::MediaStreamRequest request_;
