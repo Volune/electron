@@ -65,14 +65,6 @@ bool MediaStreamDevicesController::TakeAction() {
     return true;
   }
 
-  if (request_.audio_type ==
-          blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE ||
-      request_.video_type ==
-          blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE) {
-    HandleDisplayMediaRequest();
-    return true;
-  }
-
   // Deny the request if there is no device attached to the OS.
   if (!HasAnyAvailableDevice()) {
     Deny(blink::mojom::MediaStreamRequestResult::NO_HARDWARE);
@@ -209,30 +201,6 @@ void MediaStreamDevicesController::HandleUserMediaRequest() {
         blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
         screen_id.ToString(), "Screen");
   }
-
-  std::move(callback_).Run(
-      devices,
-      devices.empty() ? blink::mojom::MediaStreamRequestResult::NO_HARDWARE
-                      : blink::mojom::MediaStreamRequestResult::OK,
-      std::unique_ptr<content::MediaStreamUI>());
-}
-
-void MediaStreamDevicesController::HandleDisplayMediaRequest() {
-  blink::MediaStreamDevices devices;
-
-  if (request_.video_type ==
-          blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE &&
-      !request_.requested_video_device_id.empty()) {
-    content::DesktopMediaID video_media_id =
-        content::DesktopMediaID::Parse(request_.requested_video_device_id);
-
-    if (video_media_id.type != content::DesktopMediaID::TYPE_NONE) {
-      devices.emplace_back(blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
-                           video_media_id.ToString(), "Display Video");
-    }
-  }
-
-  VLOG(0) << "DEVICES " << devices.size();
 
   std::move(callback_).Run(
       devices,
