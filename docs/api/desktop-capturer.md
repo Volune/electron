@@ -78,7 +78,7 @@ This example shows how to capture a video from a [WebContents](web-contents.md)
 // In the renderer process.
 const { desktopCapturer, remote } = require('electron')
 
-desktopCapturer.getWebContentsStream({ webContentsId: getCurrentWebContents().id }).then(async result => {
+desktopCapturer.getWebContentsStream({ webContentsId: remote.getCurrentWebContents().id }).then(async result => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: {
