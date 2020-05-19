@@ -33,7 +33,7 @@ class DesktopCapturer : public gin::Wrappable<DesktopCapturer>,
 
   static gin::Handle<DesktopCapturer> Create(v8::Isolate* isolate);
 
-  static gin_helper::Dictionary GetWebContentsStream(
+  static std::string GetMediaSourceIdForWebContents(
       v8::Isolate* isolate,
       gin_helper::ErrorThrower thrower,
       int32_t request_web_contents_id,

@@ -38,6 +38,6 @@ export async function getSources (options: Electron.SourcesOptions) {
   return deserialize(sources);
 }
 
-export function getWebContentsStream (options: Electron.WebContentsStreamOptions) {
-  return ipcRendererInternal.invoke<Electron.WebContentsStreamResult>('ELECTRON_BROWSER_DESKTOP_CAPTURER_GET_WEB_CONTENTS_STREAM', options, getCurrentStack());
+export function getMediaSourceIdForWebContents (webContentsId: number) {
+  return ipcRendererInternal.invoke<Electron.WebContentsStreamResult>('ELECTRON_BROWSER_DESKTOP_CAPTURER_GET_MEDIA_SOURCE_ID_FOR_WEB_CONTENTS', webContentsId, getCurrentStack());
 }

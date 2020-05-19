@@ -130,18 +130,18 @@ desktopCapturer.getSources({ types: ['window', 'screen'] }).then(sources => {
   }
 })
 
-desktopCapturer.getWebContentsStream({ webContentsId: remote.getCurrentWebContents().id }).then(result => {
+desktopCapturer.getMediaSourceIdForWebContents(remote.getCurrentWebContents().id).then(mediaSourceId => {
   (navigator as any).webkitGetUserMedia({
     audio:  {
       mandatory: {
         chromeMediaSource: 'tab',
-        chromeMediaSourceId: result.id
+        chromeMediaSourceId: mediaSourceId
       }
     },
     video: {
       mandatory: {
         chromeMediaSource: 'tab',
-        chromeMediaSourceId: result.id,
+        chromeMediaSourceId: mediaSourceId,
         minWidth: 1280,
         maxWidth: 1280,
         minHeight: 720,
