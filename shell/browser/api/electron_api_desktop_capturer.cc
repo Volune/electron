@@ -208,19 +208,19 @@ gin::Handle<DesktopCapturer> DesktopCapturer::Create(v8::Isolate* isolate) {
 }
 
 // static
-gin_helper::Dictionary DesktopCapturer::GetWebContentsStream(
+std::string DesktopCapturer::GetMediaSourceIdForWebContents(
     v8::Isolate* isolate,
     gin_helper::ErrorThrower thrower,
     int32_t request_web_contents_id,
     int32_t web_contents_id) {
-  gin_helper::Dictionary result = gin::Dictionary::CreateEmpty(isolate);
+  std::string id;
   auto* web_contents = gin_helper::TrackableObject<WebContents>::FromWeakMapID(
       isolate, web_contents_id);
 
   if (!web_contents) {
     thrower.ThrowError("Failed to find WebContents with id " +
                        std::to_string(web_contents_id));
-    return result;
+    return id;
   }
 
   auto* main_frame = web_contents->web_contents()->GetMainFrame();
@@ -231,7 +231,6 @@ gin_helper::Dictionary DesktopCapturer::GetWebContentsStream(
       content::WebContentsMediaCaptureId(main_frame->GetProcess()->GetID(),
                                          main_frame->GetRoutingID()));
 
-  std::string id;
   auto* request_web_contents =
       gin_helper::TrackableObject<WebContents>::FromWeakMapID(
           isolate, request_web_contents_id);
@@ -254,9 +253,7 @@ gin_helper::Dictionary DesktopCapturer::GetWebContentsStream(
         media_id, "", content::kRegistryStreamTypeTab);
   }
 
-  result.Set("id", id);
-  result.Set("mediaId", media_id.ToString());
-  return result;
+  return id;
 }
 
 gin::ObjectTemplateBuilder DesktopCapturer::GetObjectTemplateBuilder(
@@ -282,8 +279,9 @@ void Initialize(v8::Local<v8::Object> exports,
   gin_helper::Dictionary dict(context->GetIsolate(), exports);
   dict.SetMethod("createDesktopCapturer",
                  &electron::api::DesktopCapturer::Create);
-  dict.SetMethod("getWebContentsStream",
-                 &electron::api::DesktopCapturer::GetWebContentsStream);
+  dict.SetMethod(
+      "getMediaSourceIdForWebContents",
+      &electron::api::DesktopCapturer::GetMediaSourceIdForWebContents);
 }
 
 }  // namespace

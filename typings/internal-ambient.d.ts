@@ -101,7 +101,7 @@ declare namespace NodeJS {
     electronBinding(name: 'command_line'): Electron.CommandLine;
     electronBinding(name: 'desktop_capturer'): {
       createDesktopCapturer(): ElectronInternal.DesktopCapturer;
-      getWebContentsStream(requestWebContentsId: number, webContentsId: number): Electron.WebContentsStreamResult;
+      getMediaSourceIdForWebContents(requestWebContentsId: number, webContentsId: number): string;
     };
     electronBinding(name: 'net'): {
       isValidHeaderName: (headerName: string) => boolean;

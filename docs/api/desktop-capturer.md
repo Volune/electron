@@ -78,19 +78,19 @@ This example shows how to capture a video from a [WebContents](web-contents.md)
 // In the renderer process.
 const { desktopCapturer, remote } = require('electron')
 
-desktopCapturer.getWebContentsStream({ webContentsId: remote.getCurrentWebContents().id }).then(async result => {
+desktopCapturer.getMediaSourceIdForWebContents(remote.getCurrentWebContents().id).then(async mediaSourceId => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: {
         mandatory: {
           chromeMediaSource: 'tab',
-          chromeMediaSourceId: result.id
+          chromeMediaSourceId: mediaSourceId
         }
       },
       video: {
         mandatory: {
           chromeMediaSource: 'tab',
-          chromeMediaSourceId: result.id,
+          chromeMediaSourceId: mediaSourceId,
           minWidth: 1280,
           maxWidth: 1280,
           minHeight: 720,
@@ -138,12 +138,14 @@ Returns `Promise<DesktopCapturerSource[]>` - Resolves with an array of [`Desktop
 **Note** Capturing the screen contents requires user consent on macOS 10.15 Catalina or higher,
 which can detected by [`systemPreferences.getMediaAccessStatus`].
 
-### `desktopCapturer.getWebContentsStream(options)`
+### `desktopCapturer.getMediaSourceIdForWebContents(webContentsId)`
 
-* `options` Object
-  * `webContentsId` number - Id of the WebContents to get stream of
+* `webContentsId` number - Id of the WebContents to get stream of
 
-Returns `Promise<WebContentsStreamResult>` - Resolves with a [`WebContentsStreamResult`](structures/web-contents-stream-result.md).
+Returns `Promise<string>` - Resolves with the identifier of a WebContents stream, this identifier can be
+    used with [`navigator.mediaDevices.getUserMedia`].
+    The identifier is **only valid for 10 seconds**.
+    The identifier may be empty if not requested from a renderer process.
 
 [`navigator.mediaDevices.getUserMedia`]: https://developer.mozilla.org/en/docs/Web/API/MediaDevices/getUserMedia
 [`systemPreferences.getMediaAccessStatus`]: system-preferences.md#systempreferencesgetmediaaccessstatusmediatype-macos
